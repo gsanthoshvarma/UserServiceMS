@@ -31,7 +31,7 @@ public class UsernameCustomAuthenticationFilter extends UsernamePasswordAuthenti
 					return getAuthenticationManager()
 							.authenticate(new UsernamePasswordAuthenticationToken(loginRequestModel.getEmail(), loginRequestModel.getPassword(),new ArrayList<>()));
 				} catch ( Exception e) {
-					throw new RuntimeException("Unable marshal Json Object");
+					throw new RuntimeException("Unable marshal Json Object "+e.toString());
 				}
 				
 	}

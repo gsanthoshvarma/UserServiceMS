@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.sr.ms.user.userservice.service.UserService;
+import com.sr.ms.user.userservice.service.UserServiceImpl;
+
 @Configuration
 @EnableWebSecurity
 public class UserServiceSecurity extends WebSecurityConfigurerAdapter {
@@ -18,11 +21,16 @@ public class UserServiceSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private Environment environment;
 	
+	@Autowired
+	private UserServiceImpl userSerive;
+	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
-		http.authorizeRequests().antMatchers("/signup/**").hasIpAddress(environment.getProperty("gateway.ip")).and()
-		.addFilter(getUsernameCustomAuthenticationFilter());
+		http.headers().frameOptions().disable();
+		http.authorizeRequests().antMatchers("/signup/**").permitAll();
+		//.hasIpAddress(environment.getProperty("gateway.ip"))
+		http.addFilter(getUsernameCustomAuthenticationFilter());
 	}
 	
 	@Bean 
@@ -38,8 +46,9 @@ public class UserServiceSecurity extends WebSecurityConfigurerAdapter {
 	}
 	
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		
+		auth.userDetailsService(userSerive).passwordEncoder(bCryptPasswordEncoder());
 	}
+	
 	
 	@Override
 	@Bean
