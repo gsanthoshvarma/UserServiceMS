@@ -17,12 +17,12 @@ import com.sr.ms.user.userservice.service.UserServiceImpl;
 @Configuration
 @EnableWebSecurity
 public class UserServiceSecurity extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private Environment environment;
 	
 	@Autowired
 	private UserServiceImpl userSerive;
+	
+	@Autowired
+	private Environment environment;
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
@@ -40,7 +40,8 @@ public class UserServiceSecurity extends WebSecurityConfigurerAdapter {
 	}
 	
 	public UsernameCustomAuthenticationFilter getUsernameCustomAuthenticationFilter() throws Exception {
-		UsernameCustomAuthenticationFilter authenticationFilter = new UsernameCustomAuthenticationFilter(authenticationManagerBean());
+		UsernameCustomAuthenticationFilter authenticationFilter = new UsernameCustomAuthenticationFilter(authenticationManagerBean(),userSerive,environment);
+		authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
 		//authenticationFilter.setAuthenticationManager(authenticationManager());
 		return authenticationFilter;
 	}

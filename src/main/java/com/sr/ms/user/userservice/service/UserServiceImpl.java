@@ -17,12 +17,13 @@ import org.springframework.stereotype.Service;
 import com.sr.ms.user.userservice.data.UserEntity;
 import com.sr.ms.user.userservice.data.UserRepository;
 import com.sr.ms.user.userservice.service.model.UserDto;
+
 @Service
-public class UserServiceImpl implements UserService{
-	
+public class UserServiceImpl implements UserService {
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -40,8 +41,20 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<UserEntity> userEntity = userRepository.findByEmail(username);
-		if(!userEntity.isPresent()) throw new BadCredentialsException("Username and password invaild");
-		return new User(username, userEntity.get().getPassword(), true,true,true,true,new ArrayList<>());
+		if (!userEntity.isPresent())
+			throw new BadCredentialsException("Username and password invaild");
+		return new User(username, userEntity.get().getPassword(), true, true, true, true, new ArrayList<>());
+	}
+
+	@Override
+	public UserDto getUserDetailsByEmail(String email) {
+		Optional<UserEntity> userEntity = userRepository.findByEmail(email);
+		if (!userEntity.isPresent())
+			throw new BadCredentialsException("Username and password invaild");
+		ModelMapper mapper = new ModelMapper();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		UserDto userDto = mapper.map(userEntity.get(), UserDto.class);
+		return userDto;
 	}
 
 }
